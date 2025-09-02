@@ -1,0 +1,84 @@
+name: Build Custody Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install static site generator
+        run: |
+          mkdir -p site
+          cp CUSTODY.json site/custody.json
+          cat > site/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title>Chain of Custody Dashboard</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; }
+              h1 { color: #333; }
+              table { border-collapse: collapse; width: 100%; margin-top: 20px; background: #fff; }
+              th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+              th { background: #eee; }
+              tr:nth-child(even) { background: #fafafa; }
+              code { background: #eee; padding: 2px 4px; border-radius: 3px; }
+            </style>
+          </head>
+          <body>
+            <h1>🔐 Chain of Custody Dashboard</h1>
+            <p>Live log of all commits, PRs, and file hashes for this repository.</p>
+            <table id="custody-table">
+              <thead>
+                <tr>
+                  <th>Date/Time (UTC)</th>
+                  <th>Actor</th>
+                  <th>Event</th>
+                  <th>Commit</th>
+                  <th>PR</th>
+                  <th>Files</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <script>
+              fetch("custody.json")
+                .then(r => r.json())
+                .then(data => {
+                  const tbody = document.querySelector("#custody-table tbody");
+                  data.forEach(entry => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                      <td>${entry.timestamp}</td>
+                      <td>${entry.actor}</td>
+                      <td>${entry.event}</td>
+                      <td><code>${entry.commit}</code></td>
+                      <td>${entry.pr !== "N/A" ? `<a href="${entry.pr}" target="_blank">PR</a>` : "N/A"}</td>
+                      <td>${entry.files.map(f => `<div><code>${f.file}</code>: ${f.sha256.slice(0,12)}...</div>`).join("")}</td>
+                    `;
+                    tbody.appendChild(tr);
+                  });
+                });
+            </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
