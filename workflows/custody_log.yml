@@ -1,0 +1,86 @@
+name: Update Chain of Custody
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+
+jobs:
+  update-custody:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config user.name "custody-bot"
+          git config user.email "custody-bot@users.noreply.github.com"
+
+      - name: Capture event details
+        id: details
+        run: |
+          echo "actor=${{ github.actor }}" >> $GITHUB_OUTPUT
+          echo "sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "event_name=${{ github.event_name }}" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date -u +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "pr_url=${{ github.event.pull_request.html_url }}" >> $GITHUB_OUTPUT
+          else
+            echo "pr_url=N/A" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compute SHA-256 hashes of changed files
+        id: hashes
+        run: |
+          FILE_LIST=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
+          HASH_JSON="[]"
+          for FILE in $FILE_LIST; do
+            if [ -f "$FILE" ]; then
+              HASH=$(sha256sum "$FILE" | awk '{print $1}')
+              ENTRY="{\"file\": \"$FILE\", \"sha256\": \"$HASH\"}"
+              HASH_JSON=$(echo $HASH_JSON | jq ". + [$ENTRY]")
+            fi
+          done
+          echo "hashes=$HASH_JSON" >> $GITHUB_OUTPUT
+
+      - name: Ensure CUSTODY.md exists with header
+        run: |
+          if [ ! -f CUSTODY.md ]; then
+            echo "# 🔐 Chain of Custody Log" > CUSTODY.md
+            echo "" >> CUSTODY.md
+            echo "| Date/Time (UTC) | Actor | Event | Commit/PR | File Hashes |" >> CUSTODY.md
+            echo "|-----------------|-------|-------|-----------|-------------|" >> CUSTODY.md
+          fi
+
+      - name: Append custody entry (Markdown)
+        run: |
+          HASH_SUMMARY=$(echo '${{ steps.hashes.outputs.hashes }}' | jq -r '.[] | "\(.file):\(.sha256[0:8])..."' | paste -sd "," -)
+          LINE="| ${{ steps.details.outputs.timestamp }} | ${{ steps.details.outputs.actor }} | ${{ steps.details.outputs.event_name }} | ${{ steps.details.outputs.sha }} | $HASH_SUMMARY |"
+          echo "$LINE" >> CUSTODY.md
+
+      - name: Update CUSTODY.json
+        run: |
+          ENTRY=$(jq -n \
+            --arg ts "${{ steps.details.outputs.timestamp }}" \
+            --arg actor "${{ steps.details.outputs.actor }}" \
+            --arg event "${{ steps.details.outputs.event_name }}" \
+            --arg sha "${{ steps.details.outputs.sha }}" \
+            --arg pr "${{ steps.details.outputs.pr_url }}" \
+            --argjson hashes '${{ steps.hashes.outputs.hashes }}' \
+            '{timestamp:$ts, actor:$actor, event:$event, commit:$sha, pr:$pr, files:$hashes}')
+          
+          if [ ! -f CUSTODY.json ]; then
+            echo "[]" > CUSTODY.json
+          fi
+          
+          jq ". + [$ENTRY]" CUSTODY.json > tmp.$$.json && mv tmp.$$.json CUSTODY.json
+
+      - name: Commit and push changes
+        run: |
+          git add CUSTODY.md CUSTODY.json
+          git commit -m "chore: update custody log (md + json) [skip ci]" || echo "No changes to commit"
+          git push
