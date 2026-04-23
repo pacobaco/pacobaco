@@ -10,7 +10,7 @@ export type RepoNode = {
   name: string;
   description: string;
   href: string;
-  homepage?: string | null;
+  homepage: string | null;
   stars: number;
   forks: number;
   watchers: number;

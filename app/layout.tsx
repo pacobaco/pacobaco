@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'pacobaco — Live Systems Topology',
-  description: 'Profile-as-app surface for pacobaco repositories, grouped into AI, finance, network, and infrastructure layers.',
+  description: 'Live GitHub-powered systems profile for pacobaco.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

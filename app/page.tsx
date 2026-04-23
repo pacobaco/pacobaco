@@ -1,6 +1,6 @@
-import { LayerGrid } from './components/LayerGrid';
-import { StatsStrip } from './components/StatsStrip';
-import { SystemMap } from './components/SystemMap';
+import { LayerGrid } from '@/components/LayerGrid';
+import { StatsStrip } from '@/components/StatsStrip';
+import { SystemMap } from '@/components/SystemMap';
 import { getProfileSnapshot } from '@/lib/github';
 
 const theses = [
@@ -29,18 +29,12 @@ export default async function HomePage() {
             <span className="badge">Live GitHub signal</span>
           </div>
           <div className="hero-links">
-            <a href={snapshot.profile.htmlUrl} target="_blank" rel="noreferrer">
-              GitHub profile
-            </a>
-            <a href="http://www.wethemachines.com" target="_blank" rel="noreferrer">
-              WeTheMachines
-            </a>
-            <a href="https://www.johnnybabylon.com" target="_blank" rel="noreferrer">
-              Johnny Babylon
-            </a>
+            <a href={snapshot.profile.htmlUrl} target="_blank" rel="noreferrer">GitHub profile</a>
+            <a href="http://www.wethemachines.com" target="_blank" rel="noreferrer">WeTheMachines</a>
+            <a href="https://www.johnnybabylon.com" target="_blank" rel="noreferrer">Johnny Babylon</a>
           </div>
         </div>
-        <div className="hero-card">
+        <div className="hero-card panel">
           <img className="avatar" src={snapshot.profile.avatarUrl} alt={snapshot.profile.name} />
           <div>
             <small className="eyebrow">Source</small>
@@ -76,9 +70,7 @@ export default async function HomePage() {
           </div>
           <div className="thesis-stack">
             {theses.map((thesis) => (
-              <div key={thesis} className="thesis-card">
-                {thesis}
-              </div>
+              <div key={thesis} className="thesis-card">{thesis}</div>
             ))}
           </div>
           <div className="callout">
@@ -87,7 +79,7 @@ export default async function HomePage() {
         </section>
       </section>
 
-      <section className="panel">
+      <section className="panel" style={{ marginTop: 22 }}>
         <div className="panel-head">
           <div>
             <small className="eyebrow">Repository layers</small>
@@ -126,9 +118,9 @@ export default async function HomePage() {
           </div>
           <ul className="notes-list">
             <li>Set <code>GITHUB_TOKEN</code> and optionally <code>GITHUB_USERNAME</code>.</li>
-            <li>Deploy on Vercel for scheduled cache revalidation.</li>
+            <li>Deploy on Vercel for cached revalidation.</li>
             <li>Use the <code>/api/repos</code> endpoint for widgets or dashboards.</li>
-            <li>Swap classification rules in <code>lib/classify.ts</code> as the repo graph evolves.</li>
+            <li>Adjust classification logic in <code>lib/classify.ts</code> as the repo graph evolves.</li>
           </ul>
         </section>
       </section>

@@ -36,7 +36,7 @@ type GitHubRepo = {
   forks_count: number;
   watchers_count: number;
   language: string | null;
-  topics: string[];
+  topics?: string[];
   updated_at: string;
   archived: boolean;
   fork: boolean;
@@ -105,11 +105,7 @@ export async function getProfileSnapshot(): Promise<ProfileSnapshot> {
       getJson<GitHubRepo[]>(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`),
     ]);
 
-    const nodes = repos
-      .filter((repo) => !repo.fork)
-      .map(toNode)
-      .sort(sortRepos);
-
+    const nodes = repos.filter((repo) => !repo.fork).map(toNode).sort(sortRepos);
     const now = Date.now();
     const activeLast90Days = nodes.filter(
       (repo) => now - Date.parse(repo.updatedAt) <= 1000 * 60 * 60 * 24 * 90,

@@ -1,28 +1,5 @@
 import type { RepoLayer } from './types';
 
-const rules: Array<{ layer: RepoLayer; terms: string[] }> = [
-  {
-    layer: 'Financial Systems',
-    terms: ['navstone', 'treasury', 'tpse', 'reit', 'valuation', 'asset-backed'],
-  },
-  {
-    layer: 'Intelligence',
-    terms: ['act-gp', 'flyometer', 'harmonia', 'llm', 'ai', 'agent', 'model'],
-  },
-  {
-    layer: 'Network & Identity',
-    terms: ['assetnexus', 'graph', 'identity', 'ger', 'ontology', 'network'],
-  },
-  {
-    layer: 'Infrastructure',
-    terms: ['ode', 'wh-uzi', 'telemetry', 'iot', 'port', 'lock'],
-  },
-  {
-    layer: 'Publication',
-    terms: ['wethemachines', 'blog', 'editorial', 'content'],
-  },
-];
-
 export function classifyRepo(input: {
   name: string;
   description?: string | null;
@@ -32,9 +9,20 @@ export function classifyRepo(input: {
     .join(' ')
     .toLowerCase();
 
-  for (const rule of rules) {
-    if (rule.terms.some((term) => haystack.includes(term))) return rule.layer;
+  if (/(navstone|treasury|reit|finance|affo|valuation|asset)/.test(haystack)) {
+    return 'Financial Systems';
   }
-
+  if (/(act-gp|ai|llm|model|agent|flyometer|harmonia|embedding|query)/.test(haystack)) {
+    return 'Intelligence';
+  }
+  if (/(graph|identity|entity|ger|network|ontology|social)/.test(haystack)) {
+    return 'Network & Identity';
+  }
+  if (/(ode|telemetry|iot|port|smart lock|infrastructure|hardware)/.test(haystack)) {
+    return 'Infrastructure';
+  }
+  if (/(wethemachines|blog|publication|content|johnnybabylon|writer)/.test(haystack)) {
+    return 'Publication';
+  }
   return 'Other';
 }
