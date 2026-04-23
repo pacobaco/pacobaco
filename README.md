@@ -1,26 +1,47 @@
-# pacobaco-profile-polished-fixed
+<h1 align="center">pacobaco</h1>
+<p align="center">
+  <strong>Juan Rodriguez</strong><br />
+  President, Saga Dog Corp · Open Source Intelligence Engineer · Research Developer
+</p>
 
-A complete Next.js profile dashboard scaffold for `pacobaco`.
+<p align="center">
+  <a href="https://www.wethemachines.com">
+    <img src="https://img.shields.io/badge/WetheMachines-Research%20%26%20Systems-111827?style=for-the-badge" />
+  </a>
+  <a href="https://wethemachines.blogspot.com">
+    <img src="https://img.shields.io/badge/Blogspot-Mirror-1d4ed8?style=for-the-badge" />
+  </a>
+</p>
 
-## Fixes included
+<p align="center">
+  Converge knowledge, not prestige.
+</p>
 
-- adds the missing `app/api/repos/route.ts`
-- adds the missing `components/*` files imported by `app/page.tsx`
-- adds `tsconfig.json` path alias support for `@/*`
-- adds a minimal `package.json`, `layout.tsx`, and `globals.css`
-- preserves live GitHub fetch with fallback behavior
+---
 
-## Environment variables
+## WETHEMACHINES // SIGNAL
 
-```bash
-GITHUB_TOKEN=your_github_token
-GITHUB_USERNAME=pacobaco
-```
+| Stream | Destination |
+|---|---|
+| Main site | https://www.wethemachines.com |
+| Blog mirror | https://wethemachines.blogspot.com |
+| Navstone | https://www.wethemachines.com/2026/04/navstone-reit-index-valuation-platform.html |
+| GERPII | https://www.wethemachines.com/2026/04/the-girlfriend-report-formalizing.html |
+| Housing | https://www.wethemachines.com/2026/03/building-the-future-of-safe-housing.html |
+| Havana Port | https://www.wethemachines.com/2026/02/inside-havana-smart-port-engineering.html |
 
-## Run locally
+---
 
-```bash
-npm install
-npm run build
-npm run dev
-```
+## Selected Repositories
+
+- https://github.com/pacobaco/wethemachines
+- https://github.com/pacobaco/wethemachines-next
+- https://github.com/pacobaco/navstone
+- https://github.com/pacobaco/flyometer
+- https://github.com/pacobaco/harmonia
+
+---
+
+<p align="center">
+  <a href="https://www.wethemachines.com">Visit WetheMachines</a>
+</p>
